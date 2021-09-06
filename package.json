@@ -1,0 +1,25 @@
+{
+  "name": "gaming-global-api",
+  "version": "1.0.0",
+  "description": "backend for my final year project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AzeemSubhani7/gaming-global-api.git"
+  },
+  "author": "Azeem Subhani",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AzeemSubhani7/gaming-global-api/issues"
+  },
+  "homepage": "https://github.com/AzeemSubhani7/gaming-global-api#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.13.7"
+  }
+}
