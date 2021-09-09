@@ -21,7 +21,7 @@ app.use(userRouter);
 
 app.get('/', (req,res) => {
   console.log("There is a request !")
-  res.send("Fuck you")
+  res.send("The server is up and running!")
 })
 
 app.listen(4000, () => console.log('The server is listenning on 4000'))

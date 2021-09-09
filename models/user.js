@@ -9,6 +9,7 @@ const UserSchema = new schema(
     password: { type: String, required: true },
     isBanned: { type: Boolean, default: false },
     role: { type: String, default: "user", enum: ["user", "root"] },
+    token: { type: String, required: true }
   },
   { timestamps: true }
 );

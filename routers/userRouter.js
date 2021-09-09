@@ -1,19 +1,26 @@
 const express = require('express');
 const User = require('../models/user');
-
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcryptjs")
 
 const userRouter = express.Router();
 
 // To create a new User
 userRouter.post('/api/user', async(req, res) => {
   try {
+    const isAlreadyRegistered = await User.findOne({ email: req.body.email })
+    if(isAlreadyRegistered) {
+      return res.status(409).send({ alreadyExisted: "The user already exist" })
+    }
     const user = new User(req.body);
-    console.log("From try")
+    // console.log("From try")
+    user.token = jwt.sign({ _id: user._id.toString() }, "woodywassad")
+    user.password = await bcrypt.hash(user.password, 8)
     console.log(user)
     await user.save();
     return res.status(201).send(user);
   } catch (error) {
-    console.log('from error')
+    // console.log('from error')
     return res.status(500).send(error)
   }
 })
