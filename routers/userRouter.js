@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs")
 
 const userRouter = express.Router();
 
-// To create a new User
+// To create a new User // Sign-in a user
 userRouter.post('/api/user', async(req, res) => {
   try {
     const isAlreadyRegistered = await User.findOne({ email: req.body.email })
@@ -22,6 +22,35 @@ userRouter.post('/api/user', async(req, res) => {
   } catch (error) {
     // console.log('from error')
     return res.status(500).send(error)
+  }
+})
+
+userRouter.post('/api/user/login', async (req, res) => {
+  try{
+    // console.log(req.body)
+    const {email, password} = req.body;
+
+
+    const user = await User.findOne({ email })
+
+    if(!user) {
+      return res.status(401).send({ Error: "Unable to Login" })
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if(!isMatch) {
+      return res.status(401).send({ Error: "Unable to Login" })
+    }
+
+    user.token = jwt.sign({ _id: user._id.toString() }, "woodywassad")
+    await user.save()
+    return res.status(200).send(user)
+
+  }
+  catch(error) {
+    console.log(error.message)
+    return res.status(500).send({ Error: "Unable to Login" })
   }
 })
 
