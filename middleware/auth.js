@@ -6,7 +6,7 @@ const authMiddleware = async(req, res, next) => {
     // console.log("from Auth")
     if(!req.headers.authorization) {
       // console.log(req.headers.authorization)
-      return res.status(401).send({ error: "Unauthorized! first" })
+      return res.status(401).send({ error: "Unauthorized! There is no token provided" })
     }
     const token = req.headers.authorization;
 
