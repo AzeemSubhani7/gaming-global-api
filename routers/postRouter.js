@@ -5,7 +5,7 @@ const authMiddleware = require('../middleware/auth');
 const postRouter = express.Router();
 
 
-// ROUTES FOR POSTS
+// -------------------------ROUTES FOR POSTS------------------------------//
 
 // FOR CREATING A POST
 postRouter.post('/api/post',authMiddleware, async(req, res) => {
@@ -111,6 +111,145 @@ postRouter.get('/api/getlikes/:id', authMiddleware, async(req, res) => {
   }
   catch(error) {
     return res.status(500).send(error)
+  }
+})
+
+// GET A POST BY ITS ID
+postRouter.get('/api/post/:id', authMiddleware, async (req, res) => {
+  try{
+    // Actual logic for getting a post by its ID
+    const post = await Post.findById(req.params.id)
+      .populate('user', { userName:1, avatar: 1 })
+      .populate('postLikes.user', { userName: 1, avatar: 1 })
+      .populate('postComments.user', { userName: 1, avatar: 1 })
+
+    if (!post) {
+      return res.status(404).send({ error: 'Post not found!' });
+    }
+
+
+    return res.status(200).send(post)
+  }
+  catch(error) {
+    console.log(error)
+    return res.status(500).send(error)
+  }
+})
+
+// DELETING A POST BY ITS ID
+postRouter.delete('/api/post/del/:id', authMiddleware, async (req, res) => {
+  try{
+    const postId = req.params.id;    // ID to like the post 
+    const { user } = req;
+
+    const post = await Post.findById(postId);
+
+    if(!post) {
+      return res.status(404).send({ error: "post not found" })
+    }
+
+    const postUserID = post.user.toString()
+    const requestUserID = user._id;
+
+    const isAdmin = user.role === 'root' ? true : false;
+
+    if(isAdmin) {
+      console.log('admin is deleting post')
+      await post.remove();
+      return res.status(200).send({ message: "post deleted by admin", post })
+    }
+
+    if(postUserID == requestUserID) {
+      console.log("There goes the logic")
+      await post.remove();
+      return res.status(200).send({ message: "post deleted successfully", post })
+    }
+
+    return res.status(401).send("Unauthorized")
+  }
+  catch(error){
+    return res.status(500).send(error)
+  }
+})
+
+// CREATE A COMMENT
+postRouter.post('/api/post/comment/:id', authMiddleware, async(req, res) => {
+  try{
+
+    const postToCommentId = req.params.id;
+    const { user } = req;
+    const { text } = req.body;
+
+    if(text.length < 1) {
+      return res.status(400).send({ error: "Comment length must be 1 character" })
+    }
+
+    const post = await Post.findById(postToCommentId)
+
+    if(!post) {
+      return res.status(404).send({ error: "Not Found!" })
+    }
+
+    const newComment = {
+      user: user._id,
+      text,
+    }
+    
+    await post.postComments.unshift(newComment)
+    await post.save();
+
+    return res.status(200).send({ message: "comment created!", post })
+
+  }
+  catch(error){
+    console.log(error)
+    return res.status(500).send(error);
+  }
+})
+
+// DELETING A COMMENT
+postRouter.delete('/api/:post/comment/del/:id', authMiddleware, async(req, res) => {
+  try{
+    const postId = req.params.post;
+    const commentToDeleteId = req.params.id;
+    const { user } = req;
+
+    // console.log(commentToDeleteId)
+    // console.log(postId)
+    // console.log(user._id)
+
+    // Logic Goes there
+    const post = await Post.findById(postId)
+    if(!post) {
+      return res.status(404).send({ error: "post not found!" })
+    }
+
+    // Finding the comment index
+    const commentIndex = post.postComments.filter(comment => comment._id == commentToDeleteId)
+    if(commentIndex.length < 1) {
+      return res.status(404).send({ error: "Comment not found" })
+    }
+    const isAbleToDelete = commentIndex[0].user.toString() == user._id ? true : false;
+    const indexOfComment = post.postComments.map(comment => comment._id).indexOf(commentToDeleteId)
+
+    if(user.role == 'root') {
+      await post.postComments.splice(indexOfComment, 1);
+      await post.save();
+      return res.status(200).send({ message: "admin deleted comment", post })
+    }
+    else{
+      if(isAbleToDelete) {
+        await post.postComments.splice(indexOfComment, 1);
+        await post.save();
+        return res.status(200).send({ message: "post deleted by user", post })
+      }
+    }
+
+    return res.status(401).send({ error: "Unauthorized!" })
+  }
+  catch(error) {
+    console.log(error)
+    return res.stauts(500).send(error)
   }
 })
 

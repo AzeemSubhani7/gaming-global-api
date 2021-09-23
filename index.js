@@ -12,6 +12,7 @@ const app = express();
 
 // This will automatically parse json to an object
 app.use(express.json());
+
 const corsOptions ={
   origin:'http://localhost:3000', 
   credentials:true,            //access-control-allow-credentials:true
