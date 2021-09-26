@@ -5,6 +5,7 @@ const cors = require('cors')
 // Local Files
 const userRouter = require('./routers/userRouter')
 const postRouter = require('./routers/postRouter')
+const profileRouter = require('./routers/profileRouter')
 // This Node will automatically run the mentioned File
 require('./db/mongoose');
 
@@ -22,6 +23,7 @@ app.use(cors(corsOptions));
 
 app.use(userRouter);
 app.use(postRouter);
+app.use(profileRouter);
 
 app.get('/', (req,res) => {
   console.log("There is a request !")
