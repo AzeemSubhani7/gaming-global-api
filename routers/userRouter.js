@@ -1,5 +1,10 @@
 const express = require('express');
+
 const User = require('../models/user');
+const Follow = require('../models/follower')
+const Chat = require('../models/chat')
+const Notification = require('../models/notification')
+
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 
@@ -18,6 +23,11 @@ userRouter.post('/api/user', async(req, res) => {
     user.password = await bcrypt.hash(user.password, 8)
     console.log(user)
     await user.save();
+
+    await new Follow({ user: user._id, followers: [], following: [] }).save()
+    await new Chat({ user:user._id, chats: [] }).save()
+    await new Notification({ user:user._id, notifications: [] }).save()
+
     return res.status(201).send(user);
   } catch (error) {
     // console.log('from error')

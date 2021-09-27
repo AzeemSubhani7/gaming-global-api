@@ -3,6 +3,7 @@ const express = require('express');
 const Post = require('../models/post');
 const User = require('../models/user');
 const Follow = require('../models/follower');
+const Notification = require('../models/notification');
 
 const authMiddleware = require('../middleware/auth');
 
@@ -69,34 +70,53 @@ profileRouter.get('/api/userposts/:id', authMiddleware, async(req, res) => {
   }
 })
 
-// 03 Follow a user
+// 03 Follow a user or unfollow a user 
 profileRouter.post('/api/user/follow/:id', authMiddleware, async(req, res) => {
   try{
+
     const userToFollowId = req.params.id;
+    
+    const userStats = await Follow.findOne({ user: req.user._id })
+    const userToFollowStats = await Follow.findOne({ user: userToFollowId })
 
-    const userToFollowStats = await Follow.find({user: userToFollowId})
-    const userToFollowingStats = await Follow.find({ user: req.user._id })
-    if(!userToFollowStats) {
-      return res.status(404).send({ error: "404 not found!" })
+    if (!userStats || !userToFollowStats) {
+      return res.status(404).send("User not found");
     }
 
-    if(userToFollowStats.length == 0) {
-      // There were no followers of this user
-      userToFollowStats.user = await userToFollowId;
-      await userToFollowStats.followers.push({ user: req.user._id })
-      await userToFollowStats.save()  
+    const isFollowing = userStats.following.filter(x => x.user.toString() === userToFollowId)
+    if(isFollowing.length == 0) {
+      // its means user A is not following user B
+      await userStats.following.unshift({ user: userToFollowId })
+      await userStats.save()
 
-      console.log("Pehla bacha")
-      return res.status(200).send("OK we good!")
+      await userToFollowStats.followers.unshift({ user: req.user._id })
+      await userToFollowStats.save()
+
+      const newNotification = {
+        type: "newfollower",
+        user: req.user._id,
+        date: Date.now()
+      }
+      
+      const userNotification = await Notification.findOne({ user: userToFollowId })
+      await userNotification.notifications.unshift(newNotification);
+      await userNotification.save()
+
+      return res.status(200).send({ message: "followed", userStats, userToFollowStats })
     }
 
-    // const isFollowing = userToFollow.followers.filter(x => {
-    //   return x.user == req.user._id
-    // })
+      // if user is already following and made a req. then unfollow if already following
+      // user A is following the user B
 
-    console.log(userToFollowStats);
+    const removeFollowingIndex = userStats.following.map(x => x.user.toString()).indexOf(userToFollowId)
+    await userStats.following.splice(removeFollowingIndex, 1)
+    await userStats.save()
 
-    return res.status(200).send("OK we good!")
+    const removeFollowerIndex = userToFollowStats.followers.map(x => x.user.toString()).indexOf(req.user._id)
+    await userToFollowStats.followers.splice(removeFollowerIndex, 1)
+    await userToFollowStats.save()
+
+    return res.status(200).send({ message: "unfollowed", userStats, userToFollowStats })
   }
   catch(error){
     console.log(error)

@@ -1,5 +1,9 @@
+// Libraries
 const express = require('express');
+// Models
 const Post = require('../models/post');
+const Notification = require('../models/notification');
+// Middleware
 const authMiddleware = require('../middleware/auth');
 
 const postRouter = express.Router();
@@ -56,10 +60,23 @@ postRouter.post('/api/post/likes/:id', authMiddleware, async (req, res) => {
     await post.postLikes.unshift({ user: user._id })
     await post.save();
 
-    return res.status(200).send(post)
+    const newNotification = {
+      type: "newlike",
+      user: user._id,
+      post: post._id,
+      date: Date.now()
+    }
+
+    const userNotification = await Notification.findOne({ user: post.user })
+    await userNotification.notifications.unshift(newNotification);
+    await userNotification.save()
+
+
+    return res.status(200).send({ message: 'post liked and notified', post, userNotification })
   }
   catch(error) {
-    res.status(500).send(error);
+    console.log(error)
+    return res.status(500).send(error);
   }
 })
 
@@ -198,7 +215,19 @@ postRouter.post('/api/post/comment/:id', authMiddleware, async(req, res) => {
     await post.postComments.unshift(newComment)
     await post.save();
 
-    return res.status(200).send({ message: "comment created!", post })
+    const newNotification = {
+      type: "newcomment",
+      user: user._id,
+      post: post._id,
+      date: Date.now()
+    }
+    
+    const userNotification = await Notification.findOne({ user: post.user })
+    await userNotification.notifications.unshift(newNotification);
+    await userNotification.save()
+
+
+    return res.status(200).send({ message: "comment created! and notified original user!", post })
 
   }
   catch(error){
