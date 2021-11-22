@@ -131,6 +131,18 @@ postRouter.get('/api/getlikes/:id', authMiddleware, async(req, res) => {
   }
 })
 
+// GET ALL THE POST FOR FEED PAGE
+postRouter.get('/api/post/allposts', authMiddleware, async(req, res) => {
+  const post = await Post.find()
+    .populate('user', { userName: 1, avatar: 1 })
+    .populate('postLikes.user', { userName: 1, avatar: 1 })
+    .populate('postComments.user', { userName: 1, avatar: 1 })
+  if(!post) {
+    return res.status(404).send({ error: 'No post Found!' })
+  }
+  return res.status(200).send(post);
+})
+
 // GET A POST BY ITS ID
 postRouter.get('/api/post/:id', authMiddleware, async (req, res) => {
   try{
