@@ -28,7 +28,7 @@ const authMiddleware = async(req, res, next) => {
 
   }
   catch(error) {
-    res.status(401).send({ error: "Unauthorized!" })
+    res.status(402).send({ error: "Unauthorized!" })
   }
 }
 

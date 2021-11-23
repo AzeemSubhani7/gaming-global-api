@@ -38,12 +38,16 @@ postRouter.post('/api/post',authMiddleware, async(req, res) => {
 // FOR LIKING A POST 
 postRouter.post('/api/post/likes/:id', authMiddleware, async (req, res) => {
   try{
+    // console.log('inside the request!');
     const postId = req.params.id;    // ID to like the post 
     const { user } = req;            // user who is liking your post
 
+    // console.log(postId);
+    // console.log(user);
+
     const post = await Post.findById(postId);
     if(!post) {
-      return res.status(404).send("No Posts Found!")
+      return res.status(404).send(new Error("No Posts Found!"));
     }
 
     // Checking if user already liked the post
@@ -53,7 +57,8 @@ postRouter.post('/api/post/likes/:id', authMiddleware, async (req, res) => {
     })
 
     if(isLiked.length > 0) {
-      return res.status(401).send({ error: "post already liked" })
+      // console.log(isLiked);
+      return res.status(402).send(new Error("Post Already liked"));
     }
 
 
@@ -88,7 +93,7 @@ postRouter.post('/api/post/unlikes/:id', authMiddleware, async (req, res) => {
 
     const post = await Post.findById(postId);
     if(!post) {
-      return res.status(404).send("No Posts Found!")
+      return res.status(404).send(new Error("Post not found"))
     }
 
     // Checking if user already liked the post
@@ -106,7 +111,7 @@ postRouter.post('/api/post/unlikes/:id', authMiddleware, async (req, res) => {
       return res.status(200).send(post)
     }
 
-    return res.status(401).send({ error: "you have not liked the post" })
+    return res.status(400).send(new Error("You've not liked the post!"))
   }
   catch(error) {
     res.status(500).send(error);
@@ -153,7 +158,7 @@ postRouter.get('/api/post/:id', authMiddleware, async (req, res) => {
       .populate('postComments.user', { userName: 1, avatar: 1 })
 
     if (!post) {
-      return res.status(404).send({ error: 'Post not found!' });
+      return res.status(404).send(new Error("Post Not found"));
     }
 
 
@@ -161,7 +166,7 @@ postRouter.get('/api/post/:id', authMiddleware, async (req, res) => {
   }
   catch(error) {
     console.log(error)
-    return res.status(500).send(error)
+    return res.status(404).send(new Error("Post not Found!"))
   }
 })
 
