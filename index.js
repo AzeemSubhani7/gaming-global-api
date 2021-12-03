@@ -1,11 +1,11 @@
 // Libraries
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
 
 // Local Files
-const userRouter = require('./routers/userRouter')
-const postRouter = require('./routers/postRouter')
-const profileRouter = require('./routers/profileRouter')
+const userRouter = require('./routers/userRouter');
+const postRouter = require('./routers/postRouter');
+const profileRouter = require('./routers/profileRouter');
 // This Node will automatically run the mentioned File
 require('./db/mongoose');
 

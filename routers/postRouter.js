@@ -5,6 +5,7 @@ const Post = require('../models/post');
 const Notification = require('../models/notification');
 // Middleware
 const authMiddleware = require('../middleware/auth');
+const User = require('../models/user');
 
 const postRouter = express.Router();
 
@@ -133,6 +134,23 @@ postRouter.get('/api/getlikes/:id', authMiddleware, async(req, res) => {
   }
   catch(error) {
     return res.status(500).send(error)
+  }
+})
+
+postRouter.get('/api/posts/:user', authMiddleware, async(req, res) => {
+  try {
+    const user = await User.findById(req.params.user);
+    const posts = await Post.find({ user: req.params.user }).populate('user');
+
+    if(!user) {
+      return res.status(404).send(new Error('User Not Found!'))
+    }
+
+    return res.status(200).send(posts)
+    
+  }
+  catch(error) {
+    return res.status(402).send(error)
   }
 })
 
