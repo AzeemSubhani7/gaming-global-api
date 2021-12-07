@@ -53,13 +53,21 @@ postRouter.post('/api/post/likes/:id', authMiddleware, async (req, res) => {
 
     // Checking if user already liked the post
 
+
     const isLiked = post.postLikes.filter(like => {
-      return like = user._id
+      return like.user.toString() === user._id.toString()
     })
 
+    // console.log('from Like', user._id)
+    console.log('from like isliked',isLiked)
+
     if(isLiked.length > 0) {
-      // console.log(isLiked);
-      return res.status(402).send(new Error("Post Already liked"));
+      
+        // console.log(isLiked);
+        console.log('inside IF')
+        // console.log(isliked)
+        return res.status(402).send(new Error("Post Already liked"));
+  
     }
 
 

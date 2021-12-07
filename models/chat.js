@@ -8,9 +8,9 @@ const Chat = new Schema({
       messageWith: { type: Schema.Types.ObjectId, ref: 'User' },
       messages: [
         {
-          msg: { type: String, required: true },
-          sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-          sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+          msg: { type: String },
+          sender: { type: Schema.Types.ObjectId, ref: 'User' },
+          receiver: { type: Schema.Types.ObjectId, ref: 'User' },
           date: { type: Date }
         }
       ]

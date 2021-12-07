@@ -68,10 +68,10 @@ userRouter.post('/api/user/login', async (req, res) => {
 userRouter.get('/api/user/:id', async(req, res) => {
   
   const _id = req.params.id;
-  console.log(_id)
+  // console.log(_id)
   try {
     const user =await User.findById(_id)
-    console.log(user)
+    // console.log(user)
     if(!user) {
       return res.status(404).send()
     }
