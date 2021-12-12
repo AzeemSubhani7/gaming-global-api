@@ -53,8 +53,9 @@ const sendMessage = async (userId, messageSendToUserId, msg) => {
     else {
       const newChat = {
         messageWith: messageSendToUserId,
-        messages: [{ newMessage }],
+        messages: [],
       };
+      newChat.messages.push(newMessage);
       senderUser.chats.push(newChat);
       await senderUser.save();
     }
@@ -75,8 +76,9 @@ const sendMessage = async (userId, messageSendToUserId, msg) => {
       // console.log(userId)
       const newChat = {
         messageWith: userId,
-        messages: [{ newMessage }],
+        messages: [],
       };
+      newChat.messages.push(newMessage)
       receiverUser.chats.push(newChat);
       await receiverUser.save();
     }
