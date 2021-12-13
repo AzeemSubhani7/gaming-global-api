@@ -178,7 +178,7 @@ postRouter.get("/api/post/:id", authMiddleware, async (req, res) => {
   try {
     // Actual logic for getting a post by its ID
     const post = await Post.findById(req.params.id)
-      .populate("user", { userName: 1, avatar: 1 })
+      .populate("user")
       .populate("postLikes.user", { userName: 1, avatar: 1 })
       .populate("postComments.user", { userName: 1, avatar: 1 });
 

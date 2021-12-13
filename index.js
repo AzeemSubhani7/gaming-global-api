@@ -4,12 +4,14 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser")
 
-// Local Files
+// Routers
 const userRouter = require("./routers/userRouter");
 const postRouter = require("./routers/postRouter");
 const profileRouter = require("./routers/profileRouter");
 const statsRouter = require("./routers/statsRouter");
 const chatRouter = require("./routers/chatRouter");
+const adminRouter = require("./routers/adminRouter")
+const reportRouter = require("./routers/reportRouter")
 
 // Message Actions
 const { addUser, removeUser, findConnectedUser } = require("./utils/roomActions")
@@ -26,8 +28,9 @@ app.use(express.json());
 //   credentials:true,            //access-control-allow-credentials:true
 //   optionSuccessStatus:200
 // }
-app.use(cors());
 
+// Middlewares
+app.use(cors());
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -41,6 +44,8 @@ app.use(postRouter);
 app.use(profileRouter);
 app.use(statsRouter);
 app.use(chatRouter);
+app.use(adminRouter);
+app.use(reportRouter);
 
 app.get("/", (req, res) => {
   console.log("There is a request !");
