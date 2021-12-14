@@ -46,7 +46,7 @@ reportRouter.delete("/api/admin/deletereport/:id", async(req, res) => {
     if(!report) {
       return res.status(404).send("report not found!")
     }
-    console.log(report);
+    // console.log(report);
     await report.remove()
 
     return res.status(200).send("Report deleted Successfully!")

@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require('../models/user');
 const Post = require('../models/post');
-const authMiddleware = require("../middleware/auth");
+const Report = require('../models/report');
 
 const adminRouter = express.Router();
 
@@ -152,6 +152,12 @@ adminRouter.delete('/api/admin/deletepost/:id', async(req, res) => {
     const post = await Post.findById(postId);
     if(!post) {
       return res.status(404).send("Post not found!")
+    }
+    let isReport = await Report.findOneAndDelete({ post: postId })
+    console.log(isReport)
+    if(isReport) {
+      await post.remove()
+      return res.status(200).send("Post and Report Removed!");
     }
     console.log(post);
     await post.remove();
