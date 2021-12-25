@@ -12,6 +12,7 @@ const statsRouter = require("./routers/statsRouter");
 const chatRouter = require("./routers/chatRouter");
 const adminRouter = require("./routers/adminRouter")
 const reportRouter = require("./routers/reportRouter")
+const scrimRouter = require("./routers/scrimRouter");
 
 // Message Actions
 const { addUser, removeUser, findConnectedUser } = require("./utils/roomActions")
@@ -46,6 +47,7 @@ app.use(statsRouter);
 app.use(chatRouter);
 app.use(adminRouter);
 app.use(reportRouter);
+app.use(scrimRouter);
 
 app.get("/", (req, res) => {
   console.log("There is a request !");

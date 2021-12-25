@@ -29,8 +29,13 @@ reportRouter.post("/api/reports/:id", authMiddleware, async (req, res) => {
 // Getting the reports
 reportRouter.get("/api/admin/getreports", async (req, res) => {
   try {
-    const reports = await Report.find().populate("user").populate("post");
-    // console.log(reports);
+    const reports = await Report.find().populate("user").populate({
+      path: 'post',
+      populate: {
+        path: 'user'
+      }
+    });
+
     return res.status(200).send(reports);
   } catch (error) {
     console.error(error);
@@ -39,22 +44,20 @@ reportRouter.get("/api/admin/getreports", async (req, res) => {
 });
 
 // Deleting a report
-reportRouter.delete("/api/admin/deletereport/:id", async(req, res) => {
-  try{
-    const report = await Report.findById(req.params.id)
+reportRouter.delete("/api/admin/deletereport/:id", async (req, res) => {
+  try {
+    const report = await Report.findById(req.params.id);
     // console.log(report);
-    if(!report) {
-      return res.status(404).send("report not found!")
+    if (!report) {
+      return res.status(404).send("report not found!");
     }
     // console.log(report);
-    await report.remove()
+    await report.remove();
 
-    return res.status(200).send("Report deleted Successfully!")
-  }
-  catch(error) {
+    return res.status(200).send("Report deleted Successfully!");
+  } catch (error) {
     console.error(error).send(error);
   }
-})
-
+});
 
 module.exports = reportRouter;
