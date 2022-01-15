@@ -13,6 +13,7 @@ const chatRouter = require("./routers/chatRouter");
 const adminRouter = require("./routers/adminRouter")
 const reportRouter = require("./routers/reportRouter")
 const scrimRouter = require("./routers/scrimRouter");
+const patchRouter = require("./routers/patchRouter")
 
 // Message Actions
 const { addUser, removeUser, findConnectedUser } = require("./utils/roomActions")
@@ -48,6 +49,7 @@ app.use(chatRouter);
 app.use(adminRouter);
 app.use(reportRouter);
 app.use(scrimRouter);
+app.use(patchRouter);
 
 app.get("/", (req, res) => {
   console.log("There is a request !");
