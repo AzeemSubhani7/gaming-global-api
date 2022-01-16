@@ -6,7 +6,7 @@ const patchRouter = express.Router();
 // To Create A patch
 patchRouter.post('/addpatch', async (req, res) => {
   try {
-      console.log(req.body)
+      // console.log(req.body)
       const newPatch = {
         title: req.body.title,
         patch: req.body.patch,
@@ -27,7 +27,7 @@ patchRouter.post('/addpatch', async (req, res) => {
 patchRouter.get('/rainbowpatch', async(req, res) => {
   try{
     const patches = await Patch.find({ for: 'rainbow' })
-    console.log(patches)
+    // console.log(patches)
     return res.status(200).send(patches)
   }
   catch(error) {
@@ -40,12 +40,26 @@ patchRouter.get('/rainbowpatch', async(req, res) => {
 patchRouter.get('/fortnitepatch', async(req, res) => {
   try{
     const patches = await Patch.find({ for: 'fortnite' })
-    console.log(patches)
+    // console.log(patches)
     return res.status(200).send(patches)
   }
   catch(error) {
     console.error(error)
     return res.status(500).send(error)
+  }
+})
+
+// To delete a Patch
+patchRouter.delete('/delpatch/:id', async(req, res) => {
+  try{
+      console.log(req.params)
+      const patch = await Patch.findById(req.params.id)
+      console.log(patch)
+      await patch.remove()
+      return res.status(200).send({ data: "deleted" })
+  }
+  catch(error) {
+      return res.status(500).send({ error: error })
   }
 })
 

@@ -10,10 +10,12 @@ const postRouter = require("./routers/postRouter");
 const profileRouter = require("./routers/profileRouter");
 const statsRouter = require("./routers/statsRouter");
 const chatRouter = require("./routers/chatRouter");
-const adminRouter = require("./routers/adminRouter")
-const reportRouter = require("./routers/reportRouter")
+const adminRouter = require("./routers/adminRouter");
+const reportRouter = require("./routers/reportRouter");
 const scrimRouter = require("./routers/scrimRouter");
-const patchRouter = require("./routers/patchRouter")
+const patchRouter = require("./routers/patchRouter");
+const editRouter = require("./routers/editProfileRouter");
+const changePasswordRouter = require('./routers/changePasswordRouter');
 
 // Message Actions
 const { addUser, removeUser, findConnectedUser } = require("./utils/roomActions")
@@ -50,6 +52,8 @@ app.use(adminRouter);
 app.use(reportRouter);
 app.use(scrimRouter);
 app.use(patchRouter);
+app.use(editRouter);
+app.use(changePasswordRouter);
 
 app.get("/", (req, res) => {
   console.log("There is a request !");

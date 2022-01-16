@@ -21,6 +21,8 @@ userRouter.post('/api/user', async(req, res) => {
     // console.log("From try")
     user.token = jwt.sign({ _id: user._id.toString() }, "woodywassad")
     user.password = await bcrypt.hash(user.password, 8)
+    user.profilepicUrl = 'http://res.cloudinary.com/dbpqxxmf2/image/upload/v1642342307/gaming-global-api/piatvez3rz0viv4fztte.jpg'
+    user.userOTP = Math.floor(100000 + Math.random() * 900000)
     console.log(user)
     await user.save();
 
