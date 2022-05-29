@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const mongoDbUrl = "mongodb://localhost:27017/gaming-global-api"
+const mongoDbUrl = "mongodb+srv://gamingglobal:gamingglobal@cluster2.zrwjx.mongodb.net/?retryWrites=true&w=majority"
 
 mongoose.connect(mongoDbUrl,{
   useUnifiedTopology: true,
