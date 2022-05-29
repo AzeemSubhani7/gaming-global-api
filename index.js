@@ -60,7 +60,7 @@ app.get("/", (req, res) => {
   res.send("The server is up and running!");
 });
 
-var port = process.env.PORT || 4000;
+var port = process.env.PORT;
 
 var server = app.listen(port, () =>
   console.log(`The server is listenning on ${port}`)
