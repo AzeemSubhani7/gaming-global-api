@@ -60,8 +60,10 @@ app.get("/", (req, res) => {
   res.send("The server is up and running!");
 });
 
-var server = app.listen(4000, () =>
-  console.log("The server is listenning on 4000")
+var port = process.env.PORT || 4000;
+
+var server = app.listen(port, () =>
+  console.log(`The server is listenning on ${port}`)
 );
 const io = require("socket.io")(server, {
   cors: {
