@@ -2,7 +2,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const bodyParser = require("body-parser")
+const bodyParser = require("body-parser");
 
 // Routers
 const userRouter = require("./routers/userRouter");
@@ -15,11 +15,19 @@ const reportRouter = require("./routers/reportRouter");
 const scrimRouter = require("./routers/scrimRouter");
 const patchRouter = require("./routers/patchRouter");
 const editRouter = require("./routers/editProfileRouter");
-const changePasswordRouter = require('./routers/changePasswordRouter');
+const changePasswordRouter = require("./routers/changePasswordRouter");
 
 // Message Actions
-const { addUser, removeUser, findConnectedUser } = require("./utils/roomActions")
-const { loadMessages, sendMessage, setMessageToUnread } = require("./utils/messageActions");
+const {
+  addUser,
+  removeUser,
+  findConnectedUser,
+} = require("./utils/roomActions");
+const {
+  loadMessages,
+  sendMessage,
+  setMessageToUnread,
+} = require("./utils/messageActions");
 
 // This Node will automatically run the mentioned File
 require("./db/mongoose");
@@ -34,6 +42,8 @@ app.use(express.json());
 // }
 
 // Middlewares
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 1;
+console.log(process.env.PORT);
 app.use(cors());
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -60,24 +70,21 @@ app.get("/", (req, res) => {
   res.send("The server is up and running!");
 });
 
-var port = process.env.PORT;
+const PORT = process.env.PORT || 8080;;
 
-var server = app.listen(port, () =>
-  console.log(`The server is listenning on ${port}`)
-);
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
+var server = app.listen(PORT, (err) => {
+  if (err) {
+    return console.log(err);
+  } 
+  return console.log(`The server is listenning on ${PORT}`);
 });
+const io = require("socket.io")(server);
 
 io.on("connection", (socket) => {
   socket.on("join", async ({ userId }) => {
     // console.log("A user has joined", userId);
     const users = await addUser(userId, socket.id);
     console.log(users);
-
   });
 
   socket.on("loadMessages", async ({ userId, messagesWith }) => {
@@ -99,23 +106,21 @@ io.on("connection", (socket) => {
       data.messageSendToUserId,
       data.message
     );
-    const receiverSocket = findConnectedUser(data.messageSendToUserId)
+    const receiverSocket = findConnectedUser(data.messageSendToUserId);
     // This means that user is online
-    if(receiverSocket) {
-      io.to(receiverSocket.socketId).emit('newMessageReceived', {newMessage})
+    if (receiverSocket) {
+      io.to(receiverSocket.socketId).emit("newMessageReceived", { newMessage });
+    } else {
+      setMessageToUnread(data.messageSendToUserId);
     }
-    else {
-        setMessageToUnread(data.messageSendToUserId)
-    }
-    if(!error) {
-      socket.emit('messageSent', { newMessage });
-      
+    if (!error) {
+      socket.emit("messageSent", { newMessage });
     }
   });
 
   socket.on("disconnected", () => {
-    const users = removeUser(socket.id)
-    console.log(users)
+    const users = removeUser(socket.id);
+    console.log(users);
     console.log("A user has disconnected! with socket-id", socket.id);
   });
 });
